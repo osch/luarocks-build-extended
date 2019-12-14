@@ -9,7 +9,7 @@ description = {
 	detailed = "luarocks-build-extended is a fork of Luarocks built-in build system which "..
 	           "supports compiling C++ sources and specifying additional compiler and "..
 	           "linker flags.",
-	homepage = "http://github.com/osch/luarocks-build-extended",
+	homepage = "http://github.com/osch/luarocks-build-extended#luarocks-build-extended",
 	license = "MIT/X11"
 }
 dependencies = {
