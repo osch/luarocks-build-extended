@@ -1,0 +1,69 @@
+version: 0.3.2.{build}
+
+os:
+- Windows Server 2012 R2
+
+shallow_clone: true
+
+environment:
+  LR_EXTERNAL: c:\external
+
+  matrix:
+  - { LUA: "5.3", LUAROCKS: "3.2.0" }
+  - { LUA: "5.1", LUAROCKS: "2.4.4" }
+  - { LUA: "5.2", LUAROCKS: "2.4.4" }
+  - { LUA: "5.3", LUAROCKS: "2.4.4" }
+  - { LUA: "5.3", LUAROCKS: "3.0.2" }
+
+platform:
+  - x64
+  - x86
+  - mingw
+
+cache:
+  - c:\hererocks -> appveyor.yml
+  - c:\external -> appveyor.yml
+
+install:
+  - echo "Setup..."
+  - set PATH=C:\Python27\Scripts;%LR_EXTERNAL%;%PATH%
+  - if /I "%platform%"=="x86" set HR_TARGET=vs_32
+  - if /I "%platform%"=="x64" set HR_TARGET=vs_64
+  - if /I "%platform%"=="mingw" set HR_TARGET=mingw
+  - if /I "%platform%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
+  - if not exist "%LR_EXTERNAL%" (
+      mkdir "%LR_EXTERNAL%" &&
+      mkdir "%LR_EXTERNAL%\lib" &&
+      mkdir "%LR_EXTERNAL%\include"
+    )
+  - if not exist c:\hererocks (
+      pip install git+https://github.com/luarocks/hererocks &&
+      hererocks c:\hererocks --lua %LUA% --target %HR_TARGET% --luarocks %LUAROCKS%
+    )
+  - call c:\hererocks\bin\activate
+
+before_build:
+  # external deps
+
+build_script:
+  - echo "Making..."
+  - set LUAROCKS_CONFIG=c:\hererocks\luarocks\config-%LUA%.lua
+  - luarocks make luarocks-build-extended-scm-0.rockspec
+
+before_test:
+  # test deps
+
+test_script:
+  - echo "Testing..."
+  - cd %APPVEYOR_BUILD_FOLDER%\tests
+  - cd test01
+  - luarocks make moduletest01-scm-0.rockspec
+  - cd ..
+  - lua test01.lua
+  - cd test02
+  - luarocks make moduletest02-scm-0.rockspec
+  - cd ..
+  - lua test02.lua
+
+after_test:
+  # deploy
