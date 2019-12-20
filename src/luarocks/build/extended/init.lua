@@ -36,6 +36,9 @@ end
 function extended.run(rockspec)
     local build     = rockspec.build
     local buildVars = chaintables(build.variables or {}, rockspec.variables)
+    if not buildVars.BUILD_DATE then
+        buildVars.BUILD_DATE = os.date("%Y-%m-%dT%H:%M:%S")
+    end
 
     local function callback(moduleName, module)
     

@@ -18,6 +18,7 @@ Specify `"extended"` as build type and `"luarocks-build-extended"` as dependency
    * CFLAG_EXTRAS list of additional C compiler arguments
    * CXXFLAG_EXTRAS list of additional C++ compiler arguments
    * LIBFLAG_EXTRAS list of additional linker arguments
+* New variable BUILD_DATE contains build date in ISO-8601 format.
 
 [luarocks-build-cpp]: https://luarocks.org/modules/osch/luarocks-build-cpp
 
@@ -60,7 +61,10 @@ build = {
             sources = {
                 "name.cpp",
                 "aux.cpp"
-            }
+            },
+            defines = { 
+              "MY_BUILD_DATE=$(BUILD_DATE)"
+            },
         }
     }
 }
