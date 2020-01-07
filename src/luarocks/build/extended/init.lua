@@ -35,6 +35,36 @@ end
 
 function extended.run(rockspec)
     local build     = rockspec.build
+
+    if build.external_dependencies then
+        local ok, deps = pcall(function() return require("luarocks.deps") end)
+        if ok then
+            if rockspec.external_dependencies then
+                for name, ext_files in pairs(rockspec.external_dependencies) do
+                    for _, d in ipairs {"_DIR", "_BINDIR", "_INCDIR", "_LIBDIR" } do
+                        if rawget(rockspec.variables, name..d) then
+                            rockspec.variables[name..d] = nil
+                        end
+                    end
+                end
+            end
+            rockspec.external_dependencies = build.external_dependencies 
+            for name, values in pairs(rockspec.external_dependencies) do
+                if not values then
+                    rockspec.external_dependencies[name] = nil
+                else
+                    for k,v in pairs(values) do
+                        if not v then values[k] = nil end
+                    end
+                end
+            end
+            local ok, err = deps.check_external_deps(rockspec, "build")
+            if not ok then
+                return nil, err
+            end
+        end
+    end
+
     local buildVars = chaintables(build.variables or {}, rockspec.variables)
     if not buildVars.BUILD_DATE then
         buildVars.BUILD_DATE = os.date("%Y-%m-%dT%H:%M:%S")

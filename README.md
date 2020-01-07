@@ -19,6 +19,9 @@ Specify `"extended"` as build type and `"luarocks-build-extended"` as dependency
    * CXXFLAG_EXTRAS list of additional C++ compiler arguments
    * LIBFLAG_EXTRAS list of additional linker arguments
 * New variable BUILD_DATE contains build date in ISO-8601 format.
+* Support for external_dependencies with the ability to disable
+  header search per platform, see also the 
+  [example for installing LuaGL OpenGL binding](example/opengl-1.11-2.rockspec).
 
 [luarocks-build-cpp]: https://luarocks.org/modules/osch/luarocks-build-cpp
 
@@ -71,4 +74,6 @@ build = {
 
 ```
 
+See also the [real world example](example/opengl-1.11-2.rockspec)
+for installing Lua OpenGL binding.
 
